@@ -151,11 +151,9 @@
 
         // Highest Score
         highScoreText = game.add.text(320, 10, '', { font: '20px Arial', fill: 'lightgreen' });
-        //highScore = getHighScoreFromFirebase();
         highScoreText.render = function () {
             highScoreText.text = 'HIGH SCORE: ' + highScore;
         }
-        console.log('rendering //////');
         highScoreText.render();
 
 
@@ -225,6 +223,7 @@
         //  Game over
         if (!ship.alive && gameOver.visible === false) {
             gameOver.visible = true;
+            // this renders the high score to game container
             checkForHighScore();
             var fadeInGameOver = game.add.tween(gameOver);
             fadeInGameOver.to({alpha: 1}, 1000, Phaser.Easing.Quintic.Out);
@@ -394,7 +393,6 @@
         if (ship.health <= 0){
             ship.kill();
             isGameOver = true;
-            console.log('GAME OVER!');
         }
         health.render();
     }
@@ -413,7 +411,6 @@
 
         ship.kill();
         isGameOver = true;
-        console.log('GAME OVER');
     }
 
       function bulletSharkCollision(shark, bullet) {
@@ -453,17 +450,17 @@
     function checkForHighScore() {
         var fb = new Firebase('https://sharksinspace.firebaseio.com/highscores');
         fb.once('value', function(snapshot) {
-            var lastHighScore = snapshot.val().score;
+            var lastHighScore = snapshot.val();
             if (score > lastHighScore) {
-                console.log('new high score! ', score);
-                //game.add.text(320, 10, 'HIGHEST SCORE: ' + score, { fontSize: '32px', fill: 'white' });
                 highScoreText.render = function () {
                   highScoreText.text = 'HIGH SCORE: ' + score;
                 }
                  highScoreText.render();
+
+                 // update firebase with this score
+                 fb.set(score);
             }
             else {
-                //game.add.text(320, 10, 'HIGHEST SCORE: ' + lastHighScore, { fontSize: '32px', fill: 'white' });
                 highScoreText.render = function () {
                   highScoreText.text = 'HIGH SCORE: ' + lastHighScore;
                 }
